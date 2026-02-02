@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA OTP Helper Tool</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-secondary: #6b7280;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container & Card Styles */
+        .container {
+            width: 100%;
+            max-width: 420px;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        input:disabled {
+            background-color: #f9fafb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: wait;
+        }
+
+        /* Views Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Result Area */
+        .otp-display {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--border-radius);
+            text-align: center;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .otp-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--success-color);
+            letter-spacing: 2px;
+            font-family: monospace;
+            margin: 0.5rem 0;
+            word-break: break-all;
+        }
+
+        .otp-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+            max-width: 300px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .toast.error { border-left-color: var(--danger-color); }
+        .toast.success { border-left-color: var(--success-color); }
+
+        .toast-content {
+            font-size: 0.875rem;
+            color: var(--text-main);
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Login View -->
+        <section id="login-view" class="card">
+            <header class="header">
+                <!-- Generic Icon -->
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary-color); margin-bottom: 10px;">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <h1>Secure Access</h1>
+                <p>Please authenticate to continue</p>
+            </header>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="login-btn">
+                    <span>Login</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Dashboard View (OTP Tool) -->
+        <section id="dashboard-view" class="card hidden">
+            <header class="header">
+                <h1>OTP Retriever</h1>
+                <p>Fetched securely from production DB</p>
+            </header>
+
+            <div class="form-group">
+                <label for="mobileNumber">Mobile Number</label>
+                <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="e.g. 1234567890" pattern="[0-9]*">
+            </div>
+
+            <button id="get-otp-btn" class="btn btn-primary">
+                <span>Get Latest OTP</span>
+            </button>
+
+            <!-- Result Container -->
+            <div id="otp-result" class="otp-display hidden">
+                <div class="otp-meta">Latest OTP for <span id="result-mobile"></span></div>
+                <div class="otp-value" id="otp-code">--</div>
+                <div class="otp-meta" id="otp-time">Fetched just now</div>
+            </div>
+            
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <button id="logout-btn" style="background: none; border: none; color: var(--text-secondary); text-decoration: underline; cursor: pointer; font-size: 0.875rem;">Logout</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        /**
+         * SERVICE LAYER
+         * 
+         * In a real app, this class would make fetch() calls to your NodeJS/Python/Go backend.
+         * Currently, it simulates network latency and database logic for demonstration purposes.
+         */
+        class AuthService {
+            constructor() {
+                // Simulating a database of users
+                this.users = [
+                    { username: 'admin', passwordHash: 'SecurePass123!' } // In reality, never store plain text passwords
+                ];
+                this.isAuthenticated = false;
+                this.sessionToken = null;
+            }
+
+            async login(username, password) {
+                return new Promise((resolve, reject) => {
+                    // Simulate network delay (800ms)
+                    setTimeout(() => {
+                        const user = this.users.find(u => u.username === username && u.passwordHash === password);
+                        if (user) {
+                            this.isAuthenticated = true;
+                            this.sessionToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.simulated_token";
+                            resolve({ token: this.sessionToken, user: { username } });
+                        } else {
+                            reject({ message: "Invalid credentials. Please try again." });
+                        }
+                    }, 800);
+                });
+            }
+
+            logout() {
+                this.isAuthenticated = false;
+                this.sessionToken = null;
+                return Promise.resolve();
+            }
+        }
+
+        class OtpService {
+            constructor(authService) {
+                this.authService = authService;
+            }
+
+            async getLatestOtp(mobileNumber) {
+                return new Promise((resolve, reject) => {
+                    if (!this.authService.isAuthenticated) {
+                        reject({ message: "Unauthorized access" });
+                        return;
+                    }
+
+                    // Simulate network delay (1200ms)
+                    setTimeout(() => {
+                        // Basic validation logic
+                        if (!mobileNumber || mobileNumber.length < 5) {
+                            reject({ message: "Please enter a valid mobile number." });
+                            return;
+                        }
+
+                        // Simulating Database retrieval logic
+                        // Generates a realistic looking 6-digit OTP
+                        const simulatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                        
+                        resolve({
+                            mobile: mobileNumber,
+                            otp: simulatedOtp,
+                            receivedAt: new Date().toLocaleTimeString()
+                        });
+                    }, 1200);
+                });
+            }
+        }
+
+        /**
+         * UI CONTROLLER
+         * Handles DOM manipulation, events, and state updates.
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Services
+            const authService = new AuthService();
+            const otpService = new OtpService(authService);
+
+            // DOM Elements
+            const loginView = document.getElementById('login-view');
+            const dashboardView = document.getElementById('dashboard-view');
+            const loginForm = document.getElementById('login-form');
+            const loginBtn = document.getElementById('login-btn');
+            
+            const mobileInput = document.getElementById('mobileNumber');
+            const getOtpBtn = document.getElementById('get-otp-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            const otpResult = document.getElementById('otp-result');
+            const resultMobile = document.getElementById('result-mobile');
+            const otpCodeEl = document.getElementById('otp-code');
+            const otpTimeEl = document.getElementById('otp-time');
+
+            // Check session on load (optional persistence)
+            // For this secure tool, we usually prefer session-only login, but let's keep it simple.
+
+            // --- Event Listeners ---
+
+            // Login Form Submit
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = loginForm.username.value;
+                const password = loginForm.password.value;
+
+                setLoading(loginBtn, true, 'Authenticating...');
+
+                try {
+                    await authService.login(username, password);
+                    showToast('Login successful', 'success');
+                    switchView('dashboard');
+                    loginForm.reset();
+                } catch (error) {
+                    showToast(error.message, 'error');
+                } finally {
+                    setLoading(loginBtn, false, 'Login');
+                }
+            });
+
+            // Get OTP Button Click
+            getOtpBtn.addEventListener('click', async () => {
+                const mobile = mobileInput.value.trim();
+
+                // Reset previous results
+                otpResult.classList.add('hidden');
+                
+                if(!mobile) {
+                    showToast('Please enter a mobile number', 'error');
+                    mobileInput.focus();
+                    return;
+                }
+
+                setLoading(getOtpBtn, true, 'Fetching from DB...');
+
+                try {
+                    const data = await otpService.getLatestOtp(mobile);
+                    
+                    // Update UI with results
+                    resultMobile.textContent = data.mobile;
+                    otpCodeEl.textContent = data.otp;
+                    otpTimeEl.textContent = `Received at ${data.receivedAt}`;
+                    
+                    otpResult.classList.remove('hidden');
+                    showToast('OTP fetched successfully', 'success');
+                } catch (error) {
+                    showToast(error.message, 'error');
+                } finally {
+                    setLoading(getOtpBtn, false, 'Get Latest OTP');
+                }
+            });
+
+            // Logout Click
+            logoutBtn.addEventListener('click', () => {
+                authService.logout();
+                switchView('login');
+                showToast('Logged out securely', 'success');
+                mobileInput.value = '';
+                otpResult.classList.add('hidden');
+            });
+
+            // --- Helper Functions ---
+
+            function switchView(viewName) {
+                if (viewName === 'dashboard') {
+                    loginView.classList.add('hidden');
+                    dashboardView.classList.remove('hidden');
+                } else {
+                    dashboardView.classList.add('hidden');
+                    loginView.classList.remove('hidden');
+                }
+            }
+
+            function setLoading(btnElement, isLoading, text) {
+                if (isLoading) {
+                    btnElement.disabled = true;
+                    // Add spinner
+                    const spinner = document.createElement('div');
+                    spinner.className = 'spinner';
+                    btnElement.innerHTML = '';
+                    btnElement.appendChild(spinner);
+                    const span = document.createElement('span');
+                    span.textContent = text;
+                    btnElement.appendChild(span);
+                } else {
+                    btnElement.disabled = false;
+                    btnElement.textContent = text;
+                }
+            }
+
+            function showToast(message, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                // Icon based on type
+                let iconSvg = '';
+                if (type === 'success') {
+                    iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                } else if (type === 'error') {
+                    iconSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+                }
+
+                toast.innerHTML = `
+                    ${iconSvg}
+                    <div class="toast-content">${message}</div>
+                `;
+
+                container.appendChild(toast);
+
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideIn 0.3s ease-in reverse forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA OTP Helper Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Login View -->
+        <section id="login-view" class="card">
+            <header class="header">
+                <!-- Generic Icon -->
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="header-icon">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <h1>Secure Access</h1>
+                <p>Please authenticate to continue</p>
+            </header>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="login-btn">
+                    <span>Login</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- Dashboard View (OTP Tool) -->
+        <section id="dashboard-view" class="card hidden">
+            <header class="header">
+                <h1>OTP Retriever</h1>
+                <p>Fetched securely from production DB</p>
+            </header>
+
+            <div class="form-group">
+                <label for="mobileNumber">Mobile Number</label>
+                <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="e.g. 1234567890" pattern="[0-9]*">
+            </div>
+
+            <button id="get-otp-btn" class="btn btn-primary">
+                <span>Get Latest OTP</span>
+            </button>
+
+            <!-- Result Container -->
+            <div id="otp-result" class="otp-display hidden">
+                <div class="otp-meta">Latest OTP for <span id="result-mobile"></span></div>
+                <div class="otp-value" id="otp-code">--</div>
+                <div class="otp-meta" id="otp-time">Fetched just now</div>
+            </div>
+            
+            <div class="logout-container">
+                <button id="logout-btn" class="logout-btn">Logout</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

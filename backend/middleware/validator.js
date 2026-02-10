@@ -13,12 +13,12 @@ const schemas = {
   // Login validation schema
   login: Joi.object({
     username: Joi.string()
-      .alphanum()
+      .pattern(/^[a-zA-Z0-9_]+$/)
       .min(3)
       .max(50)
       .required()
       .messages({
-        'string.alphanum': 'Username must contain only alphanumeric characters',
+        'string.pattern.base': 'Username must contain only letters, numbers, and underscores',
         'string.min': 'Username must be at least 3 characters long',
         'string.max': 'Username must not exceed 50 characters',
         'any.required': 'Username is required'
@@ -70,12 +70,12 @@ const schemas = {
   // User creation validation schema
   createUser: Joi.object({
     username: Joi.string()
-      .alphanum()
+      .pattern(/^[a-zA-Z0-9_]+$/)
       .min(3)
       .max(50)
       .required()
       .messages({
-        'string.alphanum': 'Username must contain only alphanumeric characters',
+        'string.pattern.base': 'Username must contain only letters, numbers, and underscores',
         'string.min': 'Username must be at least 3 characters long',
         'string.max': 'Username must not exceed 50 characters',
         'any.required': 'Username is required'
@@ -98,7 +98,7 @@ const schemas = {
         'string.email': 'Email must be a valid email address'
       }),
     role: Joi.string()
-      .valid('admin', 'user')
+      .valid('admin', 'user', 'local', 'qa', 'uat', 'beta', 'prod')
       .default('user')
       .messages({
         'any.only': 'Role must be either admin or user'
@@ -114,7 +114,7 @@ const schemas = {
         'string.email': 'Email must be a valid email address'
       }),
     role: Joi.string()
-      .valid('admin', 'user')
+      .valid('admin', 'user', 'local', 'qa', 'uat', 'beta', 'prod')
       .optional()
       .messages({
         'any.only': 'Role must be either admin or user'
@@ -136,7 +136,7 @@ const schemas = {
 function validate(schema, property = 'body') {
   return (req, res, next) => {
     const data = req[property];
-    
+
     const { error, value } = schema.validate(data, {
       abortEarly: false, // Return all errors
       stripUnknown: true // Remove unknown fields

@@ -78,7 +78,13 @@ class ApiClient {
 
             // Handle API errors
             if (!response.ok) {
-                throw new Error(data.message || data.error || 'Request failed');
+                let errorMessage = 'Request failed';
+                if (data.message) {
+                    errorMessage = data.message;
+                } else if (data.error) {
+                    errorMessage = typeof data.error === 'object' ? (data.error.message || 'Error occurred') : data.error;
+                }
+                throw new Error(errorMessage);
             }
 
             return data;

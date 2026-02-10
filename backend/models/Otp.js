@@ -13,11 +13,13 @@ async function findLatestByMobileNumber(mobileNumber, role) {
     const apiBase = getOtpApiUrl(role);
     // Ensure we don't double up on query params if already present, though here we append ?mobile=
     const url = apiBase.includes('?') ? `${apiBase}&mobile=${mobileNumber}` : `${apiBase}?mobile=${mobileNumber}`;
+    console.log(process.env.OTP_API_KEY);
     const response = await axios.get(url, {
       headers: {
         'x-api-key': process.env.OTP_API_KEY || 'random_string'
       }
     });
+    console.log(response.data);
 
     const data = response.data;
 

@@ -26,3 +26,12 @@ Thumbs.db
 # Build output
 dist/
 build/
+
+# Database files
+database/schema.sql
+database/seed.sql
+database/migrations/
+
+# Environment examples (optional, if they contain secrets)
+backend/.env.example
+

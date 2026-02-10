@@ -11,7 +11,11 @@ async function findLatestByMobileNumber(mobileNumber) {
     const apiBase = process.env.OTP_API_BASE_URL || 'http://localhost:8282/api/v4/public/latest';
     // Ensure we don't double up on query params if already present, though here we append ?mobile=
     const url = apiBase.includes('?') ? `${apiBase}&mobile=${mobileNumber}` : `${apiBase}?mobile=${mobileNumber}`;
-    const response = await axios.get(url);
+    const response = await axios.get(url, {
+      headers: {
+        'x-api-key': process.env.OTP_API_KEY || 'random_string'
+      }
+    });
 
     const data = response.data;
 

@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100) UNIQUE,
-    role ENUM('admin', 'user') DEFAULT 'user',
+    role ENUM('admin', 'user', 'local', 'qa', 'uat', 'beta', 'prod') DEFAULT 'user',
     is_active BOOLEAN DEFAULT TRUE,
     failed_login_attempts INT DEFAULT 0,
     locked_until DATETIME NULL,

@@ -3,6 +3,7 @@
  */
 const API_BASE_URL = 'http://localhost:3000/api/v1';
 const TOKEN_KEY = 'auth_token';
+const USER_ROLE_KEY = 'user_role';
 
 /**
  * API Helper Class
@@ -126,9 +127,12 @@ class AuthService {
             password
         });
 
-        // Store the JWT token
+        // Store the JWT token and user role
         if (response.data && response.data.token) {
             this.apiClient.setToken(response.data.token);
+        }
+        if (response.data && response.data.user && response.data.user.role) {
+            localStorage.setItem(USER_ROLE_KEY, response.data.user.role);
         }
 
         return response.data;
@@ -145,8 +149,9 @@ class AuthService {
             // Continue with logout even if API call fails
             console.warn('Logout API call failed:', error.message);
         } finally {
-            // Always clear the token
+            // Always clear the token and role
             this.apiClient.clearToken();
+            localStorage.removeItem(USER_ROLE_KEY);
         }
     }
 
@@ -230,6 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultMobile = document.getElementById('result-mobile');
     const otpCodeEl = document.getElementById('otp-code');
     const otpTimeEl = document.getElementById('otp-time');
+    const envBadge = document.getElementById('env-badge');
 
     // Check for existing session on page load
     checkExistingSession();
@@ -243,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Verify token is still valid by fetching current user
                 await authService.getCurrentUser();
                 switchView('dashboard');
+                updateEnvBadge();
             } catch (error) {
                 // Token is invalid, clear it and show login
                 apiClient.clearToken();
@@ -264,6 +271,32 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             dashboardView.classList.add('hidden');
             loginView.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Environment name mapping and badge colors
+     */
+    const ENV_CONFIG = {
+        local: { label: 'LOCAL', color: '#6b7280' },
+        qa: { label: 'QA', color: '#8b5cf6' },
+        uat: { label: 'UAT', color: '#f59e0b' },
+        beta: { label: 'BETA', color: '#3b82f6' },
+        prod: { label: 'PROD', color: '#ef4444' },
+        admin: { label: 'DEFAULT', color: '#6b7280' },
+        user: { label: 'DEFAULT', color: '#6b7280' }
+    };
+
+    /**
+     * Update the environment badge based on stored user role
+     */
+    function updateEnvBadge() {
+        const role = localStorage.getItem(USER_ROLE_KEY);
+        if (role && envBadge) {
+            const config = ENV_CONFIG[role] || ENV_CONFIG['local'];
+            envBadge.textContent = `Environment: ${config.label}`;
+            envBadge.style.backgroundColor = config.color;
+            envBadge.classList.remove('hidden');
         }
     }
 
@@ -353,6 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await authService.login(username, password);
             showToast('Login successful', 'success');
             switchView('dashboard');
+            updateEnvBadge();
             loginForm.reset();
         } catch (error) {
             showToast(error.message || 'Login failed. Please try again.', 'error');
@@ -414,6 +448,9 @@ document.addEventListener('DOMContentLoaded', () => {
             switchView('login');
             mobileInput.value = '';
             otpResult.classList.add('hidden');
+            if (envBadge) {
+                envBadge.classList.add('hidden');
+            }
         }
     });
 

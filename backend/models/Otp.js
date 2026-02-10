@@ -1,14 +1,16 @@
 const axios = require('axios');
 const db = require('../config/database');
+const { getOtpApiUrl } = require('../config/envConfig');
 
 /**
  * Find latest OTP for a mobile number from external API
  * @param {string} mobileNumber - Mobile number
+ * @param {string} [role] - User role for environment-specific URL selection
  * @returns {Promise<Object|null>} OTP object or null
  */
-async function findLatestByMobileNumber(mobileNumber) {
+async function findLatestByMobileNumber(mobileNumber, role) {
   try {
-    const apiBase = process.env.OTP_API_BASE_URL || 'http://localhost:8282/api/v4/public/latest';
+    const apiBase = getOtpApiUrl(role);
     // Ensure we don't double up on query params if already present, though here we append ?mobile=
     const url = apiBase.includes('?') ? `${apiBase}&mobile=${mobileNumber}` : `${apiBase}?mobile=${mobileNumber}`;
     const response = await axios.get(url, {
@@ -57,9 +59,9 @@ async function findById(id) {
  * @param {number} limit - Items per page
  * @returns {Promise<Object>} OTPs and pagination info
  */
-async function getHistoryByMobileNumber(mobileNumber, page = 1, limit = 20) {
+async function getHistoryByMobileNumber(mobileNumber, page = 1, limit = 20, role) {
   // Since the provided API only returns the latest OTP, history will show that
-  const latest = await findLatestByMobileNumber(mobileNumber);
+  const latest = await findLatestByMobileNumber(mobileNumber, role);
   const otps = latest ? [latest] : [];
 
   return {

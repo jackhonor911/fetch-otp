@@ -17,8 +17,9 @@ const { AppError } = require('../middleware/errorHandler');
 async function getLatestOtp(mobileNumber, req) {
   const ipAddress = getClientIp(req);
 
-  // Get latest OTP
-  const otp = await Otp.findLatestByMobileNumber(mobileNumber);
+  // Get latest OTP (pass user role for environment-specific URL selection)
+  const userRole = req.user ? req.user.role : null;
+  const otp = await Otp.findLatestByMobileNumber(mobileNumber, userRole);
 
   if (!otp) {
     // Log failed fetch
@@ -66,8 +67,9 @@ async function getLatestOtp(mobileNumber, req) {
 async function getOtpHistory(mobileNumber, page, limit, req) {
   const ipAddress = getClientIp(req);
 
-  // Get OTP history
-  const result = await Otp.getHistoryByMobileNumber(mobileNumber, page, limit);
+  // Get OTP history (pass user role for environment-specific URL selection)
+  const userRole = req.user ? req.user.role : null;
+  const result = await Otp.getHistoryByMobileNumber(mobileNumber, page, limit, userRole);
 
   // Transform OTP data
   const transformedOtps = result.otps.map(otp => ({

@@ -3,6 +3,7 @@ const Session = require('../models/Session');
 const AuditLog = require('../models/AuditLog');
 const { generateToken, getTokenExpirationSeconds } = require('../config/jwt');
 const { isAccountLocked, getClientIp, getUserAgent } = require('../config/security');
+const { getEnvironmentName } = require('../config/envConfig');
 const { AppError } = require('../middleware/errorHandler');
 
 /**
@@ -78,8 +79,8 @@ async function login(username, password, req) {
       userId: user.id,
       action: 'login',
       resource: 'auth',
-      details: { 
-        username, 
+      details: {
+        username,
         failedAttempts: updatedUser.failed_login_attempts,
         isLocked: !!updatedUser.locked_until
       },
@@ -134,7 +135,8 @@ async function login(username, password, req) {
       id: user.id,
       username: user.username,
       email: user.email,
-      role: user.role
+      role: user.role,
+      environment: getEnvironmentName(user.role)
     },
     expiresIn
   };

@@ -22,6 +22,66 @@ VALUES (
 ) ON DUPLICATE KEY UPDATE username=username;
 
 -- ============================================================================
+-- Seed: Environment-specific users
+-- One user per environment, all with password 'SecurePass123!'
+-- Same bcrypt hash as admin user
+-- ============================================================================
+INSERT INTO users (username, password_hash, email, role, is_active, failed_login_attempts, locked_until)
+VALUES (
+    'local_user',
+    '$2b$12$VKFl6jpeBE2OPMV3oKZ6aO/XD2nIckpOWWYihfAbJjHPjf2SimwlO',
+    'local@example.com',
+    'local',
+    TRUE,
+    0,
+    NULL
+) ON DUPLICATE KEY UPDATE username=username;
+
+INSERT INTO users (username, password_hash, email, role, is_active, failed_login_attempts, locked_until)
+VALUES (
+    'qa_user',
+    '$2b$12$VKFl6jpeBE2OPMV3oKZ6aO/XD2nIckpOWWYihfAbJjHPjf2SimwlO',
+    'qa@example.com',
+    'qa',
+    TRUE,
+    0,
+    NULL
+) ON DUPLICATE KEY UPDATE username=username;
+
+INSERT INTO users (username, password_hash, email, role, is_active, failed_login_attempts, locked_until)
+VALUES (
+    'uat_user',
+    '$2b$12$VKFl6jpeBE2OPMV3oKZ6aO/XD2nIckpOWWYihfAbJjHPjf2SimwlO',
+    'uat@example.com',
+    'uat',
+    TRUE,
+    0,
+    NULL
+) ON DUPLICATE KEY UPDATE username=username;
+
+INSERT INTO users (username, password_hash, email, role, is_active, failed_login_attempts, locked_until)
+VALUES (
+    'beta_user',
+    '$2b$12$VKFl6jpeBE2OPMV3oKZ6aO/XD2nIckpOWWYihfAbJjHPjf2SimwlO',
+    'beta@example.com',
+    'beta',
+    TRUE,
+    0,
+    NULL
+) ON DUPLICATE KEY UPDATE username=username;
+
+INSERT INTO users (username, password_hash, email, role, is_active, failed_login_attempts, locked_until)
+VALUES (
+    'prod_user',
+    '$2b$12$VKFl6jpeBE2OPMV3oKZ6aO/XD2nIckpOWWYihfAbJjHPjf2SimwlO',
+    'prod@example.com',
+    'prod',
+    TRUE,
+    0,
+    NULL
+) ON DUPLICATE KEY UPDATE username=username;
+
+-- ============================================================================
 -- Seed: otps table
 -- Sample OTP records for testing
 -- ============================================================================
@@ -66,8 +126,9 @@ INSERT INTO audit_log (user_id, action, ip_address, user_agent, details) VALUES
 -- ============================================================================
 -- Seed Summary
 -- ============================================================================
--- Users: 1 admin user
+-- Users: 6 (1 admin + 5 environment users: local, qa, uat, beta, prod)
 -- OTPs: 10 records (5 unused, 3 used, 2 expired)
 -- Sessions: 2 records (1 active, 1 revoked)
 -- Audit Logs: 4 records
 -- ============================================================================
+

@@ -69,6 +69,20 @@ body {
     font-size: 0.875rem;
 }
 
+/* Environment Badge */
+.env-badge {
+    display: inline-block;
+    margin-top: 0.75rem;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    animation: fadeIn 0.4s ease-out;
+}
+
 /* Form Elements */
 .form-group {
     margin-bottom: 1.5rem;

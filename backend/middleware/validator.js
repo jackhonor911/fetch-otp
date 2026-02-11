@@ -37,11 +37,11 @@ const schemas = {
   // Mobile number validation schema
   mobileNumber: Joi.object({
     mobileNumber: Joi.string()
-      .pattern(/^\+?[0-9]{10,15}$/)
+      .pattern(/^[a-zA-Z0-9+]{8,20}$/)
       .required()
       .messages({
-        'string.pattern.base': 'Mobile number must be 10-15 digits, optionally with + prefix',
-        'any.required': 'Mobile number is required'
+        'string.pattern.base': 'Identifier must be 8-20 alphanumeric characters, optionally with + prefix',
+        'any.required': 'Identifier is required'
       })
   }),
 

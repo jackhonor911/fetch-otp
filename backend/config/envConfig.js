@@ -13,7 +13,7 @@ const ROLE_ENV_MAP = {
 };
 
 // Default fallback URL
-const DEFAULT_OTP_URL = 'http://localhost:8282/api/v4/public/latest';
+const DEFAULT_OTP_URL = 'https://qa-mapp.tataplayfiber.com/api/v4/public/latest';
 
 /**
  * Get the OTP API URL based on user role

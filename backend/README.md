@@ -274,7 +274,7 @@ Authorization: Bearer <token>
 
 #### GET `/api/v1/otp/latest/:mobileNumber`
 
-Get the latest OTP for a mobile number.
+Get the latest OTP for a mobile number or customerId.
 
 **Headers:**
 ```
@@ -303,14 +303,14 @@ Authorization: Bearer <token>
   "success": false,
   "error": {
     "code": "OTP_NOT_FOUND",
-    "message": "No OTP found for this mobile number"
+    "message": "No OTP found for this mobile number or customerId"
   }
 }
 ```
 
 #### GET `/api/v1/otp/history/:mobileNumber`
 
-Get paginated OTP history for a mobile number.
+Get paginated OTP history for a mobile number or customerId.
 
 **Headers:**
 ```

@@ -10,10 +10,13 @@ const { getOtpApiUrl } = require('../config/envConfig');
  */
 async function findLatestByMobileNumber(mobileNumber, role) {
   try {
+    console.log(mobileNumber);
     const apiBase = getOtpApiUrl(role);
+    console.log(apiBase);
     // Ensure we don't double up on query params if already present, though here we append ?mobile=
     const url = apiBase.includes('?') ? `${apiBase}&mobile=${mobileNumber}` : `${apiBase}?mobile=${mobileNumber}`;
     console.log(process.env.OTP_API_KEY);
+    console.log(url);
     const response = await axios.get(url, {
       headers: {
         'x-api-key': process.env.OTP_API_KEY || 'random_string'
@@ -63,6 +66,7 @@ async function findById(id) {
  */
 async function getHistoryByMobileNumber(mobileNumber, page = 1, limit = 20, role) {
   // Since the provided API only returns the latest OTP, history will show that
+  console.log(mobileNumber);
   const latest = await findLatestByMobileNumber(mobileNumber, role);
   const otps = latest ? [latest] : [];
 

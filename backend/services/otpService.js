@@ -15,6 +15,7 @@ const { AppError } = require('../middleware/errorHandler');
  * @returns {Promise<Object|null>} Latest OTP or null
  */
 async function getLatestOtp(mobileNumber, req) {
+  console.log(mobileNumber);
   const ipAddress = getClientIp(req);
 
   // Get latest OTP (pass user role for environment-specific URL selection)
